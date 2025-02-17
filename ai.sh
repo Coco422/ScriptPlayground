@@ -4,7 +4,7 @@
 # Description:  主要为了在 linux 命令行终端调用 ai
 # Author:  确切说是 gemini-2.0-pro-exp
 # Created Date: 2025-02-12
-# Version: 0.2
+# Version: 0.2.1
 # Last Modified: 2025-02-12 13:26:21 by Ray
 #=============================================================
 
@@ -63,6 +63,7 @@ show_help() {
     echo "  --set_api_url <URL>  设置 API URL"
     echo "  --set_api_key <KEY>  设置 API Key"
     echo "  --set_model <model> 设置默认模型"
+    echo "  --info         显示当前环境信息"
     echo
     echo "示例:"
     echo "  ai '为什么天空是蓝色的？'   # 直接提问"
@@ -135,15 +136,15 @@ if [[ "$1" == "-list" ]]; then
     exit 0
 fi
 
-if [[ "$1" == "-m" ]]; then
-    if [[ -n "$2" ]]; then
-        MODEL="$2"
-        shift 2
-    else
-        echo "错误：请提供模型名称，例如：ai -m gpt-3.5-turbo '你的问题'"
-        exit 1
-    fi
-fi
+# if [[ "$1" == "-m" ]]; then
+#     if [[ -n "$2" ]]; then
+#         MODEL="$2"
+#         shift 2
+#     else
+#         echo "错误：请提供模型名称，例如：ai -m gpt-3.5-turbo '你的问题'"
+#         exit 1
+#     fi
+# fi
 
 stream_response() {
     local response=""
@@ -191,6 +192,16 @@ stream_response() {
 # 主逻辑
 main() {
   read_config  # 读取配置
+    # 处理 -m 选项 (在读取配置之后)
+  if [[ "$1" == "-m" ]]; then
+      if [[ -n "$2" ]]; then
+          MODEL="$2"
+          shift 2
+      else
+          echo "错误：请提供模型名称，例如：ai -m gpt-3.5-turbo '你的问题'"
+          exit 1
+      fi
+  fi
   check_and_prompt_config #检查并设置配置
 
     if [[ "$1" == "--set_api_url" ]]; then
@@ -212,6 +223,13 @@ main() {
         fi
       set_model "$2"
 
+    elif [[ "$1" == "--info" ]]; then
+        echo "当前配置信息："
+        echo "API URL: $API_URL"
+        echo "API Key: ${API_KEY:0:4}****${API_KEY: -4}"  # 仅显示部分 Key
+        echo "Model: $MODEL"
+        exit 0
+        
     elif [[ "$1" == "-chat" ]]; then
         echo "进入 AI 聊天模式，输入 'exit' 退出。（使用模型：$MODEL）"
         history=()
@@ -225,7 +243,7 @@ main() {
             payload="{\"model\": \"$MODEL\", \"messages\": [$(IFS=,; echo "${history[*]}")], \"stream\": true}"
 
             echo -n "AI: "
-        response=$(stream_response "$payload" | tee /dev/tty)  # 捕获完整 AI 输出并同时输出到控制台
+            response=$(stream_response "$payload" | tee /dev/tty)  # 捕获完整 AI 输出并同时输出到控制台
             history+=("{\"role\": \"assistant\", \"content\": \"$response\"}")
         done
     else
@@ -238,7 +256,7 @@ main() {
         payload="{\"model\": \"$MODEL\", \"messages\": [{\"role\": \"user\", \"content\": \"$question\"}], \"stream\": true}"
 
         echo -n "AI: "
-        stream_response "$payload"
+	response=$(stream_response "$payload" | tee /dev/tty)  # 捕获完整 AI 输出并同时输出到控制台
     fi
 }
 
