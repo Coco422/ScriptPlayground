@@ -5,7 +5,7 @@ _ai_complete() {
     prev="${COMP_WORDS[COMP_CWORD-1]}" # 前一个单词
 
     # 顶级命令的选项
-    opts="-help -list -m -chat --set_api_url --set_api_key --set_model"
+    opts="--help --list -m --chat --set_api_url --set_api_key --set_model"
 
     # 如果前一个单词是 -m，则提供模型列表补全（需要先读取配置）
     if [[ "$prev" == "-m" ]]; then

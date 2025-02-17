@@ -56,10 +56,10 @@ show_help() {
     echo "使用方式: ai [选项] [问题]"
     echo
     echo "选项:"
-    echo "  -help          显示帮助信息"
-    echo "  -list          获取可用模型列表"
+    echo "  --help          显示帮助信息"
+    echo "  --list          获取可用模型列表"
     echo "  -m model_name  指定模型进行对话（默认: gpt-4）"
-    echo "  -chat          进入聊天模式（多轮对话）"
+    echo "  --chat          进入聊天模式（多轮对话）"
     echo "  --set_api_url <URL>  设置 API URL"
     echo "  --set_api_key <KEY>  设置 API Key"
     echo "  --set_model <model> 设置默认模型"
@@ -68,9 +68,9 @@ show_help() {
     echo "示例:"
     echo "  ai '为什么天空是蓝色的？'   # 直接提问"
     echo "  ai -m gpt-3.5-turbo '讲个笑话'  # 指定模型"
-    echo "  ai -chat                  # 进入对话模式"
+    echo "  ai --chat                  # 进入对话模式"
     echo "  ai -m gpt-3.5-turbo -chat  # 指定模型并进入对话"
-    echo "  ai -list                   # 获取可用模型列表"
+    echo "  ai --list                   # 获取可用模型列表"
     echo "  ai --set_api_url http://example.com/api  # 设置 API URL"
     echo "  ai --set_api_key YOUR_API_KEY  # 设置 API Key"
     echo "  ai --set_model gpt-3.5-turbo     # 设置默认模型"
@@ -78,7 +78,7 @@ show_help() {
 }
 
 # 解析参数
-if [[ "$1" == "-help" ]]; then
+if [[ "$1" == "--help" ]]; then
     show_help
     exit 0
 fi
@@ -122,7 +122,7 @@ check_and_prompt_config() {
         echo "配置已保存到 $CONFIG_FILE"
     fi
 }
-if [[ "$1" == "-list" ]]; then
+if [[ "$1" == "--list" ]]; then
     read_config #先读取配置
 
     if [[ -z "$API_URL" || -z "$API_KEY" ]]; then #list也需要配置
@@ -229,8 +229,8 @@ main() {
         echo "API Key: ${API_KEY:0:4}****${API_KEY: -4}"  # 仅显示部分 Key
         echo "Model: $MODEL"
         exit 0
-        
-    elif [[ "$1" == "-chat" ]]; then
+
+    elif [[ "$1" == "--chat" ]]; then
         echo "进入 AI 聊天模式，输入 'exit' 退出。（使用模型：$MODEL）"
         history=()
         while true; do
