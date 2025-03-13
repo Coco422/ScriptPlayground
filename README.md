@@ -20,3 +20,8 @@
 `mkdir -p ~/.local/share/bash-completion/completions/`
 `cp ai_completion.bash ~/.local/share/bash-completion/completions/ai`
 然后，确保你的 `~/.bashrc` 或 `~/.bash_profile` 文件中包含以下行（通常已经有了）：
+
+
+## ssh_login_dingding
+
+这个是为了在有人登录 ssh 时直接给我钉钉机器人发消息。
